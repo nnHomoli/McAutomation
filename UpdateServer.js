@@ -39,8 +39,8 @@ async function main() {
 
     if(versions.server !== "0") mainLogger("Current server version is " + versions.server + " build " + versions.build)
     else mainLoggerWarn("No installed server version was written, if it's initial setup this is normal")
-    if(versions.java !== 0) mainLogger("Current JDK version is " + versions.java)
-    else mainLoggerWarn("No installed JDK version was written, if it's initial setup this is normal")
+    if(versions.java !== 0) mainLogger("Current JRE version is " + versions.java)
+    else mainLoggerWarn("No installed JRE version was written, if it's initial setup this is normal")
 
 
     let anyUpdates = false
@@ -62,7 +62,7 @@ async function main() {
 
     if(latestJava > versions.java) {
         anyUpdates = true
-        const loggerPrefix = "//SERVER_UPDATER/JDK:"
+        const loggerPrefix = "//SERVER_UPDATER/JRE:"
         const logger = console.log.bind(console,loggerPrefix)
         const loggerErr = console.error.bind(console,loggerPrefix)
         const link = await getJavaLink(latestJava,arch)
