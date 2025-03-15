@@ -80,7 +80,7 @@ async function main() {
             versions.java = latestJava
             fs.writeFileSync("versions.json", JSON.stringify(versions))
 
-            logger("Successfully extracted JDK");
+            logger("Successfully extracted JRE");
         }).catch(r => loggerErr("Failed to extract -- " + r))
     }
 
