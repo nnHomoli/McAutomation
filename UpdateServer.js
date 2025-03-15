@@ -10,7 +10,7 @@ const mainLoggerErr = console.error.bind(console,mainLoggerPrefix)
 
 const loadedAsMain = require.main.children.values().next().value.loaded
 
-const compatibleArch = ["aarch64","x64"]
+const compatibleArch = ["aarch64","x64","s390x"]
 
 async function main() {
     let arch = os.arch()
