@@ -51,7 +51,7 @@ async function main() {
         const loggerErr = console.error.bind(console,loggerPrefix)
 
         logger("Downloading version " + latest + " build " + latestBuild + "...");
-        await downloadFile( arch,"purpur","server.jar",latest,latestBuild).then(() => {
+        await downloadFile( `https://api.purpurmc.org/v2/purpur/${latest}/${latestBuild}/download`,"server.jar").then(() => {
             versions.server = latest
             versions.build = latestBuild
             fs.writeFileSync("versions.json",JSON.stringify(versions))
@@ -65,17 +65,18 @@ async function main() {
         const loggerPrefix = "//SERVER_UPDATER/JDK:"
         const logger = console.log.bind(console,loggerPrefix)
         const loggerErr = console.error.bind(console,loggerPrefix)
+        const link = await getJavaLink(latestJava,arch)
 
         logger("Downloading " + latestJava + "...")
 
-        const path = "jdk.tar.gz"
-        const outputFolder = "jdk"
-        await downloadFile(arch,"jdk", path, latestJava).then(() =>{
+        const path = "jre.tar.gz"
+        const outputFolder = "jre"
+        await downloadFile(link,path).then(() =>{
             logger("Successfully downloaded");
         }).catch(r => loggerErr("Failed to download -- " + r))
 
-        logger("Extracting JDK...")
-        await extractJDK(path,outputFolder).then(() => {
+        logger("Extracting JRE...")
+        await extractJRE(path,outputFolder).then(() => {
             versions.java = latestJava
             fs.writeFileSync("versions.json", JSON.stringify(versions))
 
@@ -128,7 +129,7 @@ async function getNeededJava(mcVersion) {
     }
 }
 
-function extractJDK(fromPath, outputFolder) {
+function extractJRE(fromPath, outputFolder) {
     return new Promise(async (resolve) => {
         let folder = ""
         await tar.x({
@@ -147,43 +148,29 @@ function extractJDK(fromPath, outputFolder) {
         })
     })
 }
+async function getJavaLink(version,arch) {
+    const response = await fetch(`https://api.adoptium.net/v3/assets/latest/${version}/hotspot?architecture=${arch}&image_type=jre&os=linux&vendor=eclipse`);
+    const data = await response.json()
+    const response2 = await fetch(data[0].binary.package.link)
+    return response2.url;
+}
 
-function downloadFile(arch,type,output,version,build=null) {
+function downloadFile(link,output) {
     return new Promise((resolve) => {
-        if(type === "jdk") {
-            const javaURL = `https://download.oracle.com/java/${version}/latest/jdk-${version}_linux-${arch}_bin.tar.gz`;
-
-            https.get(javaURL, async (res) => {
-                const file = fs.createWriteStream("jdk.temp");
+            https.get(link, async (res) => {
+                const file = fs.createWriteStream(output+".temp");
                 res.pipe(file);
                 file.on('finish', () => {
                     file.close();
 
-                    fs.renameSync("jdk.temp", output)
+                    fs.renameSync(output+".temp", output)
                     resolve()
                 });
                 file.on('error', (err) => {
                     throw "Failed to download " + err
                 })
             })
-
-        } else if(build !== null && type === "purpur") {
-            const url = `https://api.purpurmc.org/v2/purpur/${version}/${build}/download`;
-            https.get(url, async (res) => {
-                const file = fs.createWriteStream("server.temp");
-                res.pipe(file);
-                file.on('finish', () => {
-                    file.close();
-
-                    fs.renameSync("server.temp", output)
-                    resolve()
-                });
-                file.on('error', (err) => {
-                    throw "Failed to download " + err
-                })
-            })
-        } else {throw("No such type exists or build for Purpur wasn't provided") }
-    })
+        })
 }
 
 
