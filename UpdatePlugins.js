@@ -113,6 +113,6 @@ async function FindAndDownloadFile(pluginJson, plugin) {
 }
 
 if(loadedAsMain) {
-    mainLogger("Made by nnHomoli, All rights reserved")
+    mainLogger("Made by nnHomoli")
     main()
 }
