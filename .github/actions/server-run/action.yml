@@ -85,10 +85,9 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: Server-logs
-        path: "server/logs/"
+        path: "${{ github.workspace }}/server/logs/"
         if-no-files-found: warn
         retention-days: 10
-      working-directory: ${{ github.workspace }}
     - name: Post cleanup
       run: |
         rm -rf server
