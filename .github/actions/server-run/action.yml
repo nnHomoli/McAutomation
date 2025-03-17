@@ -1,5 +1,5 @@
-name: 'Minecraft plugin test'
-description: 'Tests a Minecraft plugin for servers'
+name: 'PurpurMC plugin testing'
+description: 'Simple plugin test using PurpurMC'
 inputs:
   path_plugin:
     description: 'Path to the directory containing the plugin'
