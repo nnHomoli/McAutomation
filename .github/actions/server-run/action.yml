@@ -32,11 +32,11 @@ runs:
           if [ "${extension}" = "jar" ]; then
             found=true
           fi
+        done
         if [ "${found}" = false ]; then
           echo "Plugin not found"
           exit 1
         fi
-        done
       working-directory: ${{ github.workspace }}
       shell: bash
     - name: Preparation before Server test
