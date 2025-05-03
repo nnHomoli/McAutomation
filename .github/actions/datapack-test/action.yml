@@ -23,7 +23,7 @@ runs:
         jq ".versions[].id" manifest.json > versions.json
 
         LINE=$(grep -n -w -F '"${{ inputs.version }}"' versions.json | sed 's#:.*$##g')
-        LINE=$(( ${LINE//:} - 1 ))
+        LINE=$(( $LINE - 1 ))
 
         jq ".versions[$LINE].url" manifest.json  | xargs curl | jq ".downloads.server.url" | xargs curl -o server.jar
 
