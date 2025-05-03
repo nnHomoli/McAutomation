@@ -1,0 +1,50 @@
+name: 'Vanilla Datapack testing'
+description: 'This action will automatically run tests on the server for your datapacks'
+inputs:
+  pack_path:
+    description: 'Path to the directory containing the datapacks'
+    required: true
+  version:
+    description: 'Version of the server'
+    type: string
+    required: true
+  upload_logs:
+    description: 'Should logs be uploaded as artifacts'
+    type: boolean
+    required: false
+    default: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        curl https://piston-meta.mojang.com/mc/game/version_manifest_v2.json -o manifest.json
+
+        jq ".versions[].id" manifest.json > versions.json
+
+        LINE=$(grep -n -w -F '"${{ inputs.version }}"' versions.json | sed 's#:.*$##g')
+        LINE=$(( ${LINE//:} - 1 ))
+
+        jq ".versions[$LINE].url" manifest.json  | xargs curl | jq ".downloads.server.url" | xargs curl -o server.jar
+
+        rm versions.json
+        rm manifest.json
+
+        mkdir server
+        mv server.jar server/
+      shell: bash
+    - run: |
+        cd server
+        java -Xmx512M -Xms512M -DbundlerMainClass="net.minecraft.gametest.Main" -jar server.jar nogui --packs ${{ github.workspace }}/${{ inputs.pack_path }}
+      shell: bash
+    - name: Upload logs
+      if: ${{ inputs.upload_logs }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: Server-logs
+        path: "server/logs/"
+        if-no-files-found: warn
+        retention-days: 10
+    - run: |
+        rm -rf server
+      shell: bash

@@ -9,8 +9,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Apply unique version
-      run: |
+    - run: |
         npm install xml2js
         node index.js ${{ github.workspace }}
       working-directory: ${{ github.action_path }}
