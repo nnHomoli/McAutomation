@@ -37,7 +37,7 @@ runs:
         cd server
         java -Xmx512M -Xms512M -DbundlerMainClass="net.minecraft.gametest.Main" -jar server.jar nogui --packs ${{ github.workspace }}/${{ inputs.pack_path }}
       shell: bash
-    - if: ${{ inputs.upload_logs }}
+    - if: inputs.upload_logs && !env.ACT
       uses: actions/upload-artifact@v4
       with:
         name: Server-logs

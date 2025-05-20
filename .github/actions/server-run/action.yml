@@ -75,7 +75,7 @@ runs:
         jre/bin/java -Xmx512M -Xms512M --add-modules=jdk.incubator.vector -jar server.jar nogui < test-commands.txt
       working-directory: ${{ github.workspace }}
       shell: bash
-    - if: ${{ inputs.upload_logs }}
+    - if: inputs.upload_logs && !env.ACT
       uses: actions/upload-artifact@v4
       with:
         name: Server-logs
