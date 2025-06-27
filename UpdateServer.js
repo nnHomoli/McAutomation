@@ -67,7 +67,7 @@ async function main() {
         const loggerErr = console.error.bind(console,loggerPrefix)
         const link = await getJavaLink(latestJava,arch)
 
-        logger("Downloading " + latestJava + "...")
+        logger("Downloading version " + latestJava + "...")
 
         const path = "jre.tar.gz"
         const outputFolder = "jre"
